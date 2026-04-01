@@ -56,7 +56,7 @@ The SCF shell is the intended pivot baseline. Import the official SCF workbook t
 The easiest path is:
 
 ```bash
-cd /mnt/c/Users/arnmata/OneDrive/Aplicaciones/Projects/my_grc
+cd /mnt/c/Users/<your_local_user>/OneDrive/Aplicaciones/Projects/my_grc
 ./scripts/ubuntu_bootstrap.sh
 ./scripts/run_workspace.sh
 ```
@@ -64,7 +64,7 @@ cd /mnt/c/Users/arnmata/OneDrive/Aplicaciones/Projects/my_grc
 If you prefer the manual path:
 
 ```bash
-cd /mnt/c/Users/arnmata/OneDrive/Aplicaciones/Projects/my_grc
+cd /mnt/c/Users/<your_local_user>/OneDrive/Aplicaciones/Projects/my_grc
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip setuptools wheel
