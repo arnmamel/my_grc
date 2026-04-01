@@ -1,0 +1,220 @@
+pack_code: SCF_ISO27001_ANNEX_A
+name: SCF Pivot + ISO 27001:2022 Annex A Copilot
+description: >
+  Governed compliance copilot pack for mapping ISO/IEC 27001:2022 Annex A
+  requirements into the Secure Controls Framework pivot baseline, refining unified
+  control wording, and drafting scoped implementation narratives with traceable
+  citations and mandatory human review.
+domain: control_mapping
+scope_type: cross_framework
+owner: grc_architecture
+lifecycle_status: active
+approval_status: approved
+default_task_key: mapping_rationale
+notes: >
+  This pack uses the SCF pivot model as the implementation backbone and ISO/IEC
+  27001:2022 Annex A as a source requirement set. It produces governed drafts and
+  prompt packages; a human reviewer must still approve all resulting outputs.
+version:
+  version_label: "2026.03.19"
+  status: active
+  review_required: true
+  created_by: seed
+  approved_by: seed
+  system_instruction: >
+    You are a governed compliance copilot. Use the Secure Controls Framework as the
+    canonical implementation backbone, preserve traceability to ISO/IEC 27001:2022
+    Annex A source requirements, distinguish requirement wording from implementation
+    wording, and always return structured outputs with citations, assumptions,
+    review notes, and confidence.
+  operating_principles:
+    - Prefer SCF-aligned unified controls as the pivot baseline for converged mappings.
+    - Treat ISO/IEC 27001:2022 Annex A as a requirement source, not as implementation wording to copy.
+    - Keep outputs implementation-focused, concise, auditable, and easy for control owners to review.
+    - Cite framework code, control ID, unified control code, and reference document keys when available.
+    - Flag missing context, weak mappings, or absent implementation evidence as explicit review points.
+    - Never assert that a control is effective merely because a mapping exists.
+  prompt_contract:
+    required_context:
+      - framework_code
+      - control_id
+      - unified_control_code
+    optional_context:
+      - organization_code
+      - product_code
+      - product_flavor_code
+      - implementation_id
+      - product_control_profile_id
+    mandatory_output_sections:
+      - summary
+      - draft
+      - citations
+      - assumptions
+      - review_points
+  output_contract:
+    common_fields:
+      - task_key
+      - summary
+      - draft
+      - citations
+      - assumptions
+      - review_points
+      - confidence
+    confidence_scale: 0_to_1
+  model_constraints:
+    human_review_required: true
+    citation_required: true
+    evidence_claims_without_evidence_forbidden: true
+  references:
+    - use_mode: authoritative
+      priority: 10
+      framework_code: SCF_2025_3_1
+      notes: Secure Controls Framework pivot baseline.
+    - use_mode: authoritative
+      priority: 20
+      framework_code: ISO27001_2022
+      notes: ISO/IEC 27001:2022 Annex A source requirements.
+    - use_mode: authoritative
+      priority: 30
+      document_key: SCF_2025_3_1
+      document_name: Secure Controls Framework 2025.3.1
+      version: "2025.3.1"
+      issuing_body: Secure Controls Framework Council
+      document_type: metaframework
+      jurisdiction: global
+      source_url: https://securecontrolsframework.com/
+      notes: Authoritative converged control model.
+    - use_mode: authoritative
+      priority: 40
+      document_key: ISO27001_2022_ANNEX_A
+      document_name: ISO/IEC 27001:2022 Annex A
+      version: "2022"
+      issuing_body: ISO/IEC
+      document_type: framework
+      jurisdiction: global
+      source_url: https://www.iso.org/standard/27001
+      notes: Requirement source set represented in paraphrased form inside my_grc.
+  tasks:
+    - task_key: mapping_rationale
+      name: Draft Mapping Rationale
+      workflow_area: control_framework_studio
+      description: >
+        Prepare a governed draft explaining why the selected SCF-aligned unified
+        control covers the chosen ISO/IEC 27001 Annex A requirement.
+      objective: >
+        Produce reviewable mapping justification that is specific, traceable, and
+        suitable for governance review.
+      input_schema:
+        required:
+          - framework_control
+          - unified_control
+        optional:
+          - control_metadata
+          - existing_mapping
+          - related_references
+      output_schema:
+        draft_fields:
+          - mapping_summary
+          - rationale
+          - implementation_angle
+          - review_notes
+      instruction_text: >
+        Explain requirement coverage, identify the implementation angle captured by
+        the unified control, and highlight any missing scope or review concerns.
+      review_checklist:
+        - Confirm the unified control really covers the full intent of the source requirement.
+        - Confirm the rationale distinguishes requirement text from implementation text.
+        - Confirm the mapping notes any partial coverage or shared-control dependencies.
+    - task_key: unified_control_wording
+      name: Draft Unified Control Wording
+      workflow_area: control_framework_studio
+      description: >
+        Draft refined wording for the unified control so it is reusable across
+        frameworks while still traceable to the selected source requirement.
+      objective: >
+        Improve control wording without duplicating copyrighted or overly framework-specific language.
+      input_schema:
+        required:
+          - framework_control
+          - unified_control
+        optional:
+          - control_metadata
+          - related_references
+      output_schema:
+        draft_fields:
+          - control_name
+          - requirement_coverage_summary
+          - implementation_guidance
+          - test_guidance
+      instruction_text: >
+        Draft implementation-oriented wording for the unified control, including how
+        it should be implemented and how it should be tested.
+      review_checklist:
+        - Confirm the wording is implementation-focused and reusable.
+        - Confirm the text avoids copying source requirement wording verbatim.
+        - Confirm the testing guidance is auditable and practical.
+    - task_key: implementation_narrative
+      name: Draft Implementation Narrative
+      workflow_area: control_framework_studio
+      description: >
+        Draft a scoped implementation narrative for an organization, product, and
+        flavor using the selected unified control and any existing implementation record.
+      objective: >
+        Help control owners produce consistent implementation narratives for
+        questionnaires, audits, and assessments.
+      input_schema:
+        required:
+          - framework_control
+          - unified_control
+        optional:
+          - organization
+          - product
+          - product_flavor
+          - implementation
+          - product_control_profile
+      output_schema:
+        draft_fields:
+          - title
+          - objective
+          - implementation_general
+          - implementation_aws
+          - testing_approach
+      instruction_text: >
+        Draft a concise implementation narrative grounded in the scoped product
+        context, existing implementation record, and current maturity posture.
+      review_checklist:
+        - Confirm the narrative matches the actual scoped product or flavor.
+        - Confirm AWS-specific details are separated from generic implementation text.
+        - Confirm the testing approach aligns with maturity and evidence plans.
+  eval_cases:
+    - case_code: MAP_A_5_1
+      task_key: mapping_rationale
+      name: ISO A.5.1 mapping explanation
+      input_payload:
+        framework_code: ISO27001_2022
+        control_id: A.5.1
+        expected_focus: policies_for_information_security
+      expected_assertions:
+        - must_include_citation_for_framework_control
+        - must_reference_unified_control
+        - must_include_review_points
+    - case_code: WORDING_A_5_1
+      task_key: unified_control_wording
+      name: ISO A.5.1 unified control wording
+      input_payload:
+        framework_code: ISO27001_2022
+        control_id: A.5.1
+      expected_assertions:
+        - must_include_implementation_guidance
+        - must_include_test_guidance
+        - must_avoid_verbatim_requirement_copy
+    - case_code: IMPL_PRODUCT_PORTAL
+      task_key: implementation_narrative
+      name: Product-scoped implementation narrative
+      input_payload:
+        organization_code: ACME
+        product_code: CUSTOMER_PORTAL
+      expected_assertions:
+        - must_include_scoped_context
+        - must_include_review_points
+        - must_include_assumptions_when_context_missing

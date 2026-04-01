@@ -1,0 +1,22 @@
+code: ISO27017
+name: ISO/IEC 27017
+version: "2015"
+category: framework
+description: Starter mapping for selected ISO/IEC 27017 cloud-specific control implementations.
+controls:
+  - control_id: 12.4.1
+    title: Event logging
+    description: Verify CloudTrail is enabled for the environment.
+    evidence_query: cloudtrail.multi_region_trail
+    severity: high
+  - control_id: 12.4.5
+    title: Administrator activity monitoring
+    description: Verify Security Hub is enabled.
+    evidence_query: securityhub.enabled
+    severity: medium
+  - control_id: 10.1.1
+    title: Encryption controls
+    description: Verify default encryption for S3 buckets.
+    evidence_query: s3.bucket_encryption
+    severity: high
+

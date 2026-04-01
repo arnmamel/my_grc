@@ -1,0 +1,27 @@
+code: CSA_CCM
+name: Cloud Security Alliance CCM
+version: 4.0
+category: framework
+description: Starter mapping for selected CSA CCM controls over AWS foundational security services.
+controls:
+  - control_id: IAM-01
+    title: Identity password policy
+    description: Validate password complexity and account policy baselines.
+    evidence_query: iam.password_policy
+    severity: high
+  - control_id: LOG-01
+    title: Centralized audit logging
+    description: Verify CloudTrail trails capture activity across the estate.
+    evidence_query: cloudtrail.multi_region_trail
+    severity: high
+  - control_id: SEF-01
+    title: Threat detection
+    description: Verify GuardDuty is enabled.
+    evidence_query: guardduty.enabled
+    severity: high
+  - control_id: DSI-01
+    title: Object storage encryption
+    description: Verify S3 buckets use default encryption.
+    evidence_query: s3.bucket_encryption
+    severity: high
+

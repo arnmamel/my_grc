@@ -1,0 +1,68 @@
+product: my_grc
+history_notes:
+  - "This registry centralizes the main maturity snapshots captured across the project so they remain visible after the live scoring model changes."
+  - "Some earlier assessments used phase-specific or area-specific models instead of the current 5-dimension delivery-readiness model."
+  - "Where a score was not recorded as a single overall number, the entry keeps explicit area scores or labels the score as a proxy."
+
+assessments:
+  - recorded_on: "2026-03-15"
+    title: "Phase 1 Strict 4 Of 5 Assessment"
+    document: "documentation/assessment/PHASE1_STRICT_4OF5_ASSESSMENT.md"
+    model: "phase_foundation"
+    confidence: "High"
+    scope: "Phase 1 backbone"
+    scores:
+      phase1_foundation: 4.0
+    measurement_basis: "Explicitly stated in the assessment document."
+
+  - recorded_on: "2026-03-16"
+    title: "Phase 2 Assessment"
+    document: "documentation/assessment/PHASE2_ASSESSMENT.md"
+    model: "phase_operations"
+    confidence: "Medium"
+    scope: "Operational tranche"
+    scores:
+      local_aws_sso_operations: 4.0
+      evidence_collection_engine: 3.0
+      confluence_publishing: 2.5
+      questionnaires: 2.5
+      recurring_assessments: 3.0
+      human_workspace: 4.0
+    measurement_basis: "Explicit per-capability scores recorded in the assessment document."
+
+  - recorded_on: "2026-03-17"
+    title: "Level-4 Reassessment"
+    document: "documentation/assessment/LEVEL4_REASSESSMENT.md"
+    model: "phase_and_quality_mix"
+    confidence: "Medium"
+    scope: "Cross-phase reassessment"
+    scores:
+      phase1_foundation: 3.8
+      phase2_operations: 3.7
+      phase3_enterprise_readiness: 3.3
+      security: 3.7
+      quality_engineering: 3.4
+      reliability: 3.3
+      deployment: 3.8
+      ui_and_ux: 3.8
+    measurement_basis: "Explicit phase and quality-area scores recorded in the reassessment document."
+
+  - recorded_on: "2026-03-18"
+    title: "AI Copilot Status Assessment"
+    document: "documentation/assessment/AI_COPILOT_STATUS_ASSESSMENT.md"
+    model: "feature_slice"
+    confidence: "Medium"
+    scope: "Governed compliance copilot"
+    scores:
+      controlled_copilot_maturity: 3.4
+    measurement_basis: "Explicit feature-slice maturity estimate captured in the assessment summary."
+
+  - recorded_on: "2026-03-19"
+    title: "UI UX Assessment"
+    document: "documentation/assessment/UI_UX_ASSESSMENT.md"
+    model: "ux_slice"
+    confidence: "Low"
+    scope: "Workspace UX"
+    scores:
+      ux_maturity: null
+    measurement_basis: "Assessment document exists, but this registry does not force a synthetic numeric score when the document does not provide one directly."

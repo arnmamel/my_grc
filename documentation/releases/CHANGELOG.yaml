@@ -1,0 +1,74 @@
+product:
+  name: my_grc
+  description: Workbook-first GRC platform for unified controls, scoped implementation, evidence, assessments, and governed AI assistance.
+
+releases:
+  - version: "0.3.0"
+    released_on: "2026-03-20"
+    title: "Authenticated Workspace, Recovery Mechanics, and Release Gates"
+    summary: "Adds local authenticated workspace access, database backup and restore mechanics, observability summaries, shared validation foundations, and a stronger release-gate path."
+    highlights:
+      - "Workspace now requires authenticated local access and can bootstrap the first secure user on first run."
+      - "Database backup creation, verification, and restore are now available through platform services and CLI commands."
+      - "Observability summaries now aggregate metric and trace logs in addition to structured application and audit logs."
+      - "Shared validation services now back key practitioner inputs such as feedback and workspace credentials."
+      - "CI now points to a unified release-gate script rather than only a raw end-to-end command."
+    known_issues:
+      - "Workspace authentication is local-password based and does not yet federate with enterprise SSO or OIDC."
+      - "The Ubuntu WSL environment still emits a host warning about failing to mount S:."
+      - "Several backend modules still use datetime.utcnow() and emit deprecation warnings during tests."
+  - version: "0.2.1"
+    released_on: "2026-03-20"
+    title: "Centralized Readiness, About Center, and Feedback Mailbox"
+    summary: "Centralizes maturity history, adds the in-product About center with live delivery-readiness scoring, and introduces a governed practitioner feedback mailbox."
+    highlights:
+      - "About page now shows current version, live delivery-readiness scoring, release blockers, improvement paths, release notes, and practitioner suggestions."
+      - "Historical maturity snapshots are centralized in one registry so older phase and capability assessments remain visible."
+      - "User feedback can now be submitted directly from the workspace and reviewed later as an operational asset."
+      - "Project metadata, release notes, and current application version are now aligned."
+    known_issues:
+      - "The Ubuntu WSL environment still emits a host warning about failing to mount S:."
+      - "Several backend modules still use datetime.utcnow() and emit deprecation warnings during tests."
+  - version: "0.2.0"
+    released_on: "2026-03-20"
+    title: "Workbook Core, About Center, and Governed Readiness"
+    summary: "Makes Control Framework Studio the spreadsheet-style core of the product, centralizes maturity and delivery readiness scoring, and adds user-visible release notes plus a feedback mailbox."
+    highlights:
+      - "Control Framework Studio redesigned into workbook tabs for SCF baseline, scoped implementation, testing, mappings, standards, and copilot work."
+      - "Current delivery readiness is measured in-product across functional correctness, usability, reliability, security, and release readiness."
+      - "About page now shows the current version, release history, assessment history, QA evidence, and user suggestions."
+      - "Feedback mailbox added so practitioners can submit improvement ideas directly from the application."
+      - "CI workflow aligned with the active testing layout and end-to-end validation path."
+    known_issues:
+      - "The Ubuntu WSL environment still emits a host warning about failing to mount S:."
+      - "Several backend modules still use datetime.utcnow() and emit deprecation warnings during tests."
+  - version: "0.1.2"
+    released_on: "2026-03-19"
+    title: "Unified Workspace, QA Harness, and Controlled Copilot"
+    summary: "Consolidated the operator workspace, added the isolated QA harness, and introduced governed AI knowledge packs."
+    highlights:
+      - "Unified workspace became the main operator shell."
+      - "QA harness now validates security, database, CLI, and workspace smoke flows."
+      - "SCF + ISO 27001 knowledge pack introduced for governed AI draft generation."
+    known_issues:
+      - "Control Framework Studio still required heavy usability work before becoming the product core."
+  - version: "0.1.1"
+    released_on: "2026-03-17"
+    title: "SCF Pivot and Product-Scoped Backbone"
+    summary: "Established SCF as the pivot framework, improved product-scoped control data, and introduced richer enterprise maturity modeling."
+    highlights:
+      - "SCF pivot baseline and reference-library support added."
+      - "Product-scoped implementations, evidence targets, and maturity services expanded."
+      - "RBAC and lifecycle governance foundations introduced."
+    known_issues:
+      - "Release-readiness measurement was still fragmented across multiple documents and views."
+  - version: "0.1.0"
+    released_on: "2026-03-15"
+    title: "Initial Local GRC Backbone"
+    summary: "Initial delivery of the local AWS-centric GRC backbone with framework seeding, evidence collection foundations, assessments, and Confluence integration."
+    highlights:
+      - "Framework templates, evidence service, assessments, and Confluence publishing were introduced."
+      - "Ubuntu WSL and Docker preparation started."
+      - "Initial maturity and roadmap documents were created."
+    known_issues:
+      - "Many capabilities were present only as foundation-level implementations."

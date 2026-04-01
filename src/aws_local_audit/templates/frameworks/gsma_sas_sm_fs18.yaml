@@ -1,0 +1,22 @@
+code: GSMA_SAS_SM_FS18
+name: GSMA SAS-SM FS.18
+version: FS.18
+category: framework
+description: Starter mapping for selected GSMA SAS-SM FS.18 operational and security controls.
+controls:
+  - control_id: FS18-LOG-01
+    title: Security event logging
+    description: Verify audit logging across AWS accounts.
+    evidence_query: cloudtrail.multi_region_trail
+    severity: high
+  - control_id: FS18-CFG-01
+    title: Configuration monitoring
+    description: Verify AWS Config is recording resources.
+    evidence_query: config.recorder
+    severity: high
+  - control_id: FS18-ENC-01
+    title: Block storage encryption
+    description: Verify EBS encryption by default.
+    evidence_query: ec2.ebs_default_encryption
+    severity: medium
+

@@ -1,0 +1,21 @@
+code: ISO27018
+name: ISO/IEC 27018
+version: "2019"
+category: framework
+description: Starter mapping for selected ISO/IEC 27018 privacy protection controls for public cloud services.
+controls:
+  - control_id: PII-LOG-01
+    title: Processing activity logging
+    description: Verify CloudTrail covers the account.
+    evidence_query: cloudtrail.multi_region_trail
+    severity: high
+  - control_id: PII-SEC-01
+    title: Threat and posture monitoring
+    description: Verify GuardDuty is enabled.
+    evidence_query: guardduty.enabled
+    severity: medium
+  - control_id: PII-ENC-01
+    title: Encryption of stored data
+    description: Verify default encryption at rest controls.
+    evidence_query: s3.bucket_encryption
+    severity: high

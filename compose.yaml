@@ -1,0 +1,24 @@
+services:
+  my_grc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my_grc:alpine
+    container_name: my_grc
+    ports:
+      - "8501:8501"
+    environment:
+      ALA_DATABASE_URL: sqlite:////app/data/audit_manager.db
+      ALA_SECRET_FILES_DIR: /app/data/secrets
+      ALA_OFFLINE_MODE: "true"
+      ALA_DEFAULT_AWS_REGION: eu-west-1
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./data:/app/data
+      - ./.streamlit:/app/.streamlit:ro
+    restart: unless-stopped

@@ -1,0 +1,12 @@
+code: SCF_2025_3_1
+name: Secure Controls Framework
+version: "2025.3.1"
+category: metaframework
+description: >
+  Secure Controls Framework shell used as the pivot baseline for converged control
+  mapping. Import the official workbook through Control Framework Studio or the CLI to populate
+  the full control catalog, authoritative-source mappings, and implementation-guide references.
+issuing_body: Secure Controls Framework Council
+jurisdiction: global
+source_url: https://securecontrolsframework.com/
+controls: []

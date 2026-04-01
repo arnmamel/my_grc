@@ -1,0 +1,843 @@
+code: ISO27001_2022
+name: ISO/IEC 27001:2022
+version: "2022"
+category: framework
+description: Full Annex A starter catalog for ISO/IEC 27001:2022 with paraphrased control intent, AWS implementation guidance, and proposed boto3 evidence checks.
+controls:
+  - control_id: A.5.1
+    title: Policies for information security
+    summary: Define, approve, publish, and periodically review security policies.
+    aws_guidance: Store approved policies in a controlled repository, restrict edits, require review cadence, and link AWS account baselines to the policy set.
+    check_type: manual
+    evidence_query: manual.policy_review
+    boto3_services: [s3, kms]
+    boto3_check: Verify the policy repository bucket exists, is encrypted, versioned, and access-restricted; policy content review remains manual.
+    severity: high
+  - control_id: A.5.2
+    title: Information security roles and responsibilities
+    summary: Assign and communicate security duties and ownership.
+    aws_guidance: Map ownership to IAM Identity Center groups, IAM roles, account contacts, and security operations responsibilities.
+    check_type: hybrid
+    evidence_query: manual.role_matrix
+    boto3_services: [organizations, iam, identitystore]
+    boto3_check: Enumerate accounts, IAM roles, and group assignments to confirm named security owners exist for each AWS environment.
+    severity: high
+  - control_id: A.5.3
+    title: Segregation of duties
+    summary: Separate conflicting responsibilities to reduce abuse or error.
+    aws_guidance: Split administrator, auditor, billing, deployer, and break-glass roles across different IAM roles and approval paths.
+    check_type: hybrid
+    evidence_query: iam.segregation_of_duties
+    boto3_services: [iam, organizations, cloudtrail]
+    boto3_check: Inspect high-privilege IAM roles, assume-role trust policies, and CloudTrail activity to flag overlapping admin and audit permissions.
+    severity: high
+  - control_id: A.5.4
+    title: Management responsibilities
+    summary: Require management to direct and support information security.
+    aws_guidance: Enforce leadership approval of account baselines, exceptions, risk acceptance, and recurring security reviews.
+    check_type: manual
+    evidence_query: manual.management_approval
+    boto3_services: [s3]
+    boto3_check: Confirm review records are stored in governed repositories; managerial approval evidence is primarily documentary.
+    severity: medium
+  - control_id: A.5.5
+    title: Contact with authorities
+    summary: Maintain procedures and contacts for relevant regulators and authorities.
+    aws_guidance: Document breach reporting and regulatory escalation paths for workloads hosted in AWS regions used by the organization.
+    check_type: manual
+    evidence_query: manual.authority_contacts
+    boto3_services: [account]
+    boto3_check: Record account region usage and support contacts to contextualize the maintained contact list; substantive review is manual.
+    severity: medium
+  - control_id: A.5.6
+    title: Contact with special interest groups
+    summary: Keep appropriate contact with specialist forums and security communities.
+    aws_guidance: Participate in AWS security bulletins, ISACs, vendor advisories, and industry working groups relevant to cloud operations.
+    check_type: manual
+    evidence_query: manual.external_forums
+    boto3_services: [health]
+    boto3_check: Capture AWS Health events and internal distribution of advisory notifications as supporting evidence.
+    severity: low
+  - control_id: A.5.7
+    title: Threat intelligence
+    summary: Gather and use information about relevant threats.
+    aws_guidance: Combine GuardDuty, Security Hub, AWS Health, and third-party intel feeds into a cloud threat monitoring process.
+    check_type: automated
+    evidence_query: threat_intelligence.coverage
+    boto3_services: [guardduty, securityhub, health]
+    boto3_check: Verify GuardDuty detectors exist, Security Hub is enabled, and AWS Health organizational visibility is configured where applicable.
+    severity: high
+  - control_id: A.5.8
+    title: Information security in project management
+    summary: Integrate security requirements into project governance.
+    aws_guidance: Require security checkpoints in IaC changes, workload onboarding, and major AWS architecture projects.
+    check_type: hybrid
+    evidence_query: manual.project_security_gates
+    boto3_services: [codepipeline, cloudformation]
+    boto3_check: Inspect pipelines and stack governance for security review stages or approvals; project governance evidence is partly manual.
+    severity: medium
+  - control_id: A.5.9
+    title: Inventory of information and other associated assets
+    summary: Identify and maintain an inventory of relevant assets.
+    aws_guidance: Use AWS Config, tagging standards, Organizations, and service inventories to track accounts, data stores, keys, buckets, instances, and applications.
+    check_type: automated
+    evidence_query: asset_inventory.coverage
+    boto3_services: [config, organizations, resourcegroupstaggingapi]
+    boto3_check: Enumerate tagged resources and Config-recorded resource types across accounts and regions to detect gaps in the asset inventory.
+    severity: high
+  - control_id: A.5.10
+    title: Acceptable use of information and other associated assets
+    summary: Define acceptable use rules for assets and information.
+    aws_guidance: Publish acceptable use standards covering AWS consoles, credentials, data handling, and administrative tooling.
+    check_type: manual
+    evidence_query: manual.acceptable_use
+    boto3_services: [iam, sso-admin]
+    boto3_check: Confirm users authenticate through managed access paths such as IAM Identity Center and that direct IAM users are minimized.
+    severity: medium
+  - control_id: A.5.11
+    title: Return of assets
+    summary: Ensure assets and access are returned or removed when relationships end.
+    aws_guidance: Tie AWS access removal to HR offboarding and revoke console, API, and federated entitlements promptly.
+    check_type: hybrid
+    evidence_query: identity.offboarding
+    boto3_services: [iam, sso-admin, identitystore]
+    boto3_check: Identify dormant IAM users, stale access keys, and lingering group assignments after expected offboarding dates.
+    severity: high
+  - control_id: A.5.12
+    title: Classification of information
+    summary: Classify information according to business and protection needs.
+    aws_guidance: Apply data classification tags and map them to encryption, logging, retention, and sharing controls in AWS.
+    check_type: hybrid
+    evidence_query: data.classification_tags
+    boto3_services: [resourcegroupstaggingapi, s3, dynamodb, rds]
+    boto3_check: Check whether in-scope data stores carry required classification tags and identify untagged storage resources.
+    severity: high
+  - control_id: A.5.13
+    title: Labelling of information
+    summary: Use labels consistent with the classification scheme.
+    aws_guidance: Enforce metadata labels through AWS tags, object prefixes, database attributes, and documentation templates.
+    check_type: hybrid
+    evidence_query: data.labelling
+    boto3_services: [resourcegroupstaggingapi, s3]
+    boto3_check: Verify required tags or object metadata patterns exist on repositories used for sensitive data.
+    severity: medium
+  - control_id: A.5.14
+    title: Information transfer
+    summary: Protect information during transfer inside and outside the organization.
+    aws_guidance: Use TLS, VPC endpoints, approved sharing services, encryption, and controlled cross-account or external data transfer mechanisms.
+    check_type: hybrid
+    evidence_query: data.transfer_protection
+    boto3_services: [s3, kms, ec2, acm]
+    boto3_check: Inspect S3 public access settings, endpoint usage, TLS certificates, and approved transfer services for sensitive data channels.
+    severity: high
+  - control_id: A.5.15
+    title: Access control
+    summary: Establish and apply access control rules based on business needs.
+    aws_guidance: Centralize identity, use least privilege roles, manage permission sets, and align resource policies to approved access models.
+    check_type: automated
+    evidence_query: access_control.baseline
+    boto3_services: [iam, sso-admin, organizations]
+    boto3_check: Flag wildcard permissions, root usage patterns, excessive managed policies, and unused or over-privileged principals.
+    severity: high
+  - control_id: A.5.16
+    title: Identity management
+    summary: Manage the lifecycle of identities and related credentials.
+    aws_guidance: Prefer IAM Identity Center or trusted federation, automate joiner-mover-leaver flows, and minimize local IAM users.
+    check_type: automated
+    evidence_query: identity.lifecycle
+    boto3_services: [iam, sso-admin, identitystore]
+    boto3_check: Enumerate IAM users, console passwords, access keys, group memberships, and permission sets to assess lifecycle governance.
+    severity: high
+  - control_id: A.5.17
+    title: Authentication information
+    summary: Control the creation, use, and protection of authentication secrets.
+    aws_guidance: Enforce strong console authentication, MFA, short-lived credentials, and secret storage in Secrets Manager or Parameter Store.
+    check_type: automated
+    evidence_query: iam.password_policy
+    boto3_services: [iam, secretsmanager, ssm]
+    boto3_check: Validate password policy, MFA coverage for IAM users, stale access keys, and use of managed secret stores.
+    severity: high
+  - control_id: A.5.18
+    title: Access rights
+    summary: Provision, review, modify, and remove access rights appropriately.
+    aws_guidance: Use approval-driven role assignment, periodic access recertification, and automated deprovisioning across AWS accounts.
+    check_type: hybrid
+    evidence_query: access_reviews.periodic
+    boto3_services: [iam, accessanalyzer, sso-admin, identitystore]
+    boto3_check: Compare active principals and high-risk permissions against review records; flag dormant or excessive access not recently reviewed.
+    severity: high
+  - control_id: A.5.19
+    title: Information security in supplier relationships
+    summary: Address security risks in supplier relationships.
+    aws_guidance: Evaluate AWS Marketplace vendors, SaaS integrations, support providers, and cross-account third parties before granting access.
+    check_type: manual
+    evidence_query: manual.supplier_security
+    boto3_services: [iam, ram]
+    boto3_check: Enumerate third-party cross-account trusts, shared resources, and external principals to support supplier reviews.
+    severity: medium
+  - control_id: A.5.20
+    title: Addressing information security within supplier agreements
+    summary: Include required security terms in supplier agreements.
+    aws_guidance: Require contracts and statements of work for vendors with AWS access or hosted data to contain security and audit obligations.
+    check_type: manual
+    evidence_query: manual.supplier_contracts
+    boto3_services: [iam, ram]
+    boto3_check: Provide technical evidence of third-party integrations and access paths; contractual adequacy remains manual.
+    severity: medium
+  - control_id: A.5.21
+    title: Managing information security in the ICT supply chain
+    summary: Manage security risk across the ICT supply chain.
+    aws_guidance: Review software dependencies, AMIs, CI/CD artifacts, and partner integrations used to build and run AWS workloads.
+    check_type: hybrid
+    evidence_query: supply_chain.integrity
+    boto3_services: [inspector2, ecr, signer, codeartifact]
+    boto3_check: Verify image scanning, package repository controls, code signing, and approved artifact sources where used.
+    severity: high
+  - control_id: A.5.22
+    title: Monitoring, review and change management of supplier services
+    summary: Monitor and manage changes in supplier services and their security impact.
+    aws_guidance: Track changes in external integrations, support channels, managed services, and third-party account access.
+    check_type: hybrid
+    evidence_query: supplier.change_monitoring
+    boto3_services: [cloudtrail, config, iam]
+    boto3_check: Detect changed trust relationships, new external principals, and modified supplier-connected resources since the last review.
+    severity: medium
+  - control_id: A.5.23
+    title: Information security for use of cloud services
+    summary: Define and apply security requirements for cloud service use.
+    aws_guidance: Establish AWS landing zone guardrails, account vending, encryption defaults, logging, and approved service usage rules.
+    check_type: automated
+    evidence_query: cloud.governance_baseline
+    boto3_services: [organizations, config, cloudtrail, securityhub]
+    boto3_check: Verify organizational guardrails, Config coverage, CloudTrail logging, and Security Hub enablement across enrolled accounts.
+    severity: high
+  - control_id: A.5.24
+    title: Information security incident management planning and preparation
+    summary: Prepare for information security incident handling.
+    aws_guidance: Maintain AWS-focused playbooks, escalation paths, forensic procedures, and communications channels.
+    check_type: hybrid
+    evidence_query: ir.plan_preparedness
+    boto3_services: [ssm, sns, lambda]
+    boto3_check: Confirm automation documents, notification topics, and response tooling exist to support incident playbooks.
+    severity: high
+  - control_id: A.5.25
+    title: Assessment and decision on information security events
+    summary: Assess events to determine whether they are incidents.
+    aws_guidance: Route CloudTrail, GuardDuty, Security Hub, and application findings into triage workflows with defined severity criteria.
+    check_type: hybrid
+    evidence_query: ir.event_triage
+    boto3_services: [securityhub, guardduty, eventbridge]
+    boto3_check: Verify findings sources are enabled and wired to EventBridge or ticketing integrations for triage.
+    severity: high
+  - control_id: A.5.26
+    title: Response to information security incidents
+    summary: Respond to incidents according to approved procedures.
+    aws_guidance: Automate containment where possible, such as isolating instances, disabling credentials, and blocking public exposure.
+    check_type: hybrid
+    evidence_query: ir.response_execution
+    boto3_services: [ssm, ec2, iam, lambda]
+    boto3_check: Validate existence of automation runbooks for common AWS containment actions and sample execution records.
+    severity: high
+  - control_id: A.5.27
+    title: Learning from information security incidents
+    summary: Capture lessons learned and improve controls after incidents.
+    aws_guidance: Feed incident outcomes into AWS guardrail improvements, detection tuning, and architecture updates.
+    check_type: manual
+    evidence_query: manual.post_incident_review
+    boto3_services: [securityhub, cloudtrail]
+    boto3_check: Provide incident and finding history to support retrospective reviews; lesson quality is manual.
+    severity: medium
+  - control_id: A.5.28
+    title: Collection of evidence
+    summary: Collect and preserve evidence suitable for investigation and legal needs.
+    aws_guidance: Preserve CloudTrail logs, snapshots, GuardDuty findings, and S3 object versions with chain-of-custody controls.
+    check_type: automated
+    evidence_query: evidence.forensic_readiness
+    boto3_services: [cloudtrail, s3, kms, ec2]
+    boto3_check: Verify immutable or versioned evidence stores, KMS protection, log retention, and snapshot preservation controls.
+    severity: high
+  - control_id: A.5.29
+    title: Information security during disruption
+    summary: Maintain information security during disruptive events.
+    aws_guidance: Include security requirements in disaster recovery, failover, backup restore, and degraded-operations plans.
+    check_type: hybrid
+    evidence_query: bc.security_during_disruption
+    boto3_services: [backup, route53, rds, ec2]
+    boto3_check: Validate backup plans, recovery-region readiness, and failover architectures that preserve encryption and access controls.
+    severity: high
+  - control_id: A.5.30
+    title: ICT readiness for business continuity
+    summary: Ensure ICT services can support continuity objectives.
+    aws_guidance: Align AWS architectures with RTO and RPO targets using multi-AZ, backup, replication, and tested recovery procedures.
+    check_type: automated
+    evidence_query: bc.ict_readiness
+    boto3_services: [backup, rds, dynamodb, route53, autoscaling]
+    boto3_check: Inspect backup coverage, replication settings, health checks, and multi-AZ or regional resilience configurations.
+    severity: high
+  - control_id: A.5.31
+    title: Legal, statutory, regulatory and contractual requirements
+    summary: Identify and meet applicable obligations.
+    aws_guidance: Map legal and contractual requirements to AWS regions, data residency, logging, retention, and supplier terms.
+    check_type: manual
+    evidence_query: manual.compliance_obligations
+    boto3_services: [account, organizations]
+    boto3_check: Inventory account geography and enabled regions to support obligation mapping and regional compliance review.
+    severity: high
+  - control_id: A.5.32
+    title: Intellectual property rights
+    summary: Protect intellectual property and comply with licensing obligations.
+    aws_guidance: Control access to source repositories, artifacts, AMIs, and data exports; track software licensing in build and runtime environments.
+    check_type: hybrid
+    evidence_query: ip.protection
+    boto3_services: [codecommit, ecr, s3]
+    boto3_check: Verify restricted access to code and artifact repositories and identify uncontrolled public sharing.
+    severity: medium
+  - control_id: A.5.33
+    title: Protection of records
+    summary: Protect records from loss, destruction, falsification, unauthorized access, or release.
+    aws_guidance: Use retention policies, backups, versioning, immutable storage where needed, and strong access controls for regulated records.
+    check_type: automated
+    evidence_query: records.protection
+    boto3_services: [s3, backup, kms]
+    boto3_check: Verify versioning, Object Lock where required, backup coverage, retention configuration, and KMS encryption for record stores.
+    severity: high
+  - control_id: A.5.34
+    title: Privacy and protection of PII
+    summary: Protect personal data in accordance with applicable privacy obligations.
+    aws_guidance: Apply data minimization, encryption, logging, regional controls, retention limits, and restricted access to PII workloads in AWS.
+    check_type: hybrid
+    evidence_query: privacy.pii_protection
+    boto3_services: [macie2, kms, s3, rds]
+    boto3_check: Verify Macie coverage where used, encryption at rest, bucket restrictions, and tagging of PII-related resources.
+    severity: high
+  - control_id: A.5.35
+    title: Independent review of information security
+    summary: Conduct independent reviews of the information security approach and implementation.
+    aws_guidance: Run independent cloud security assessments, control testing, and architecture reviews separate from day-to-day operators.
+    check_type: manual
+    evidence_query: manual.independent_review
+    boto3_services: [securityhub, config]
+    boto3_check: Provide system-generated security posture evidence to support independent review reports.
+    severity: medium
+  - control_id: A.5.36
+    title: Compliance with policies, rules and standards for information security
+    summary: Check compliance with internal security requirements.
+    aws_guidance: Translate internal policies into AWS Config rules, Security Hub standards, SCPs, and automated detective controls.
+    check_type: automated
+    evidence_query: compliance.internal_policy
+    boto3_services: [config, securityhub, organizations]
+    boto3_check: Measure compliance through Config rule states, Security Hub findings, and organizational guardrail exceptions.
+    severity: high
+  - control_id: A.5.37
+    title: Documented operating procedures
+    summary: Maintain documented procedures for security-relevant operations.
+    aws_guidance: Keep procedures for key rotation, account provisioning, backup restore, incident response, and change management.
+    check_type: hybrid
+    evidence_query: manual.operating_procedures
+    boto3_services: [ssm, s3]
+    boto3_check: Verify operational runbooks or Automation documents exist in managed repositories; procedural adequacy is manual.
+    severity: medium
+  - control_id: A.6.1
+    title: Screening
+    summary: Perform appropriate background screening before employment or engagement.
+    aws_guidance: Link workforce screening to eligibility for privileged AWS access and break-glass roles.
+    check_type: manual
+    evidence_query: manual.screening
+    boto3_services: [iam, sso-admin]
+    boto3_check: Support manual review by listing privileged roles and their assigned personnel.
+    severity: medium
+  - control_id: A.6.2
+    title: Terms and conditions of employment
+    summary: Communicate security responsibilities in employment terms.
+    aws_guidance: Include AWS access handling, credential protection, and acceptable administrative behavior in employment terms and onboarding.
+    check_type: manual
+    evidence_query: manual.employment_terms
+    boto3_services: [iam]
+    boto3_check: Provide roster of personnel with AWS access for comparison against signed terms records.
+    severity: medium
+  - control_id: A.6.3
+    title: Information security awareness, education and training
+    summary: Provide security awareness and role-based training.
+    aws_guidance: Deliver cloud security training for AWS administrators, developers, and incident responders.
+    check_type: manual
+    evidence_query: manual.training_records
+    boto3_services: [iam, sso-admin]
+    boto3_check: Produce lists of active privileged users to compare against training completion records.
+    severity: medium
+  - control_id: A.6.4
+    title: Disciplinary process
+    summary: Apply a disciplinary process for violations of information security requirements.
+    aws_guidance: Ensure policy violations involving AWS credentials, data handling, or administrative actions trigger defined HR and management processes.
+    check_type: manual
+    evidence_query: manual.disciplinary_process
+    boto3_services: [cloudtrail]
+    boto3_check: Preserve CloudTrail evidence of policy violations to support disciplinary action where appropriate.
+    severity: low
+  - control_id: A.6.5
+    title: Responsibilities after termination or change of employment
+    summary: Continue relevant security responsibilities after role change or termination.
+    aws_guidance: Revoke AWS access immediately and revalidate obligations on confidentiality, data retention, and credential handling.
+    check_type: hybrid
+    evidence_query: identity.termination_controls
+    boto3_services: [iam, sso-admin, identitystore]
+    boto3_check: Detect accounts, access keys, and permission-set assignments that remain active after offboarding milestones.
+    severity: high
+  - control_id: A.6.6
+    title: Confidentiality or non-disclosure agreements
+    summary: Use confidentiality obligations appropriate to the risk context.
+    aws_guidance: Require NDAs for personnel or suppliers with access to sensitive AWS-hosted information or management planes.
+    check_type: manual
+    evidence_query: manual.nda_records
+    boto3_services: [iam]
+    boto3_check: List sensitive-role holders and data-admin roles to support NDA coverage checks.
+    severity: medium
+  - control_id: A.6.7
+    title: Remote working
+    summary: Apply security measures for remote working arrangements.
+    aws_guidance: Protect AWS administration through MFA, device controls, conditional access, VPN or zero-trust access, and session monitoring.
+    check_type: hybrid
+    evidence_query: remote_working.security
+    boto3_services: [iam, cloudtrail]
+    boto3_check: Review console sign-in patterns, MFA usage, source IP behavior, and privileged access activity for remote administration scenarios.
+    severity: high
+  - control_id: A.6.8
+    title: Information security event reporting
+    summary: Require personnel to report information security events promptly.
+    aws_guidance: Provide channels for reporting suspicious AWS activity, credential leaks, and misconfigurations.
+    check_type: hybrid
+    evidence_query: event_reporting.channels
+    boto3_services: [sns, securityhub]
+    boto3_check: Verify reporting or escalation topics, inbox integrations, and enabled findings feeds that can trigger reports.
+    severity: medium
+  - control_id: A.7.1
+    title: Physical security perimeters
+    summary: Protect physical areas containing information and supporting facilities.
+    aws_guidance: Treat AWS data center physical controls as inherited and document office or colocation controls for customer-managed locations.
+    check_type: manual
+    evidence_query: inherited.physical_security
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for AWS physical controls; capture inheritance from AWS assurance documentation and local-site reviews.
+    severity: low
+  - control_id: A.7.2
+    title: Physical entry
+    summary: Control and monitor physical entry to secure areas.
+    aws_guidance: Inherit AWS site controls and review entry controls for corporate offices or on-premises network locations connected to AWS.
+    check_type: manual
+    evidence_query: inherited.physical_entry
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for physical access; maintain inheritance evidence plus local physical access logs.
+    severity: low
+  - control_id: A.7.3
+    title: Securing offices, rooms and facilities
+    summary: Secure offices, rooms, and facilities where information is processed.
+    aws_guidance: Cover office spaces and network rooms used to administer or connect to AWS environments.
+    check_type: manual
+    evidence_query: manual.office_security
+    boto3_services: []
+    boto3_check: No direct boto3 evidence; local facility review required.
+    severity: low
+  - control_id: A.7.4
+    title: Physical security monitoring
+    summary: Monitor physical premises for unauthorized access.
+    aws_guidance: Inherit AWS monitoring for AWS facilities and document local CCTV or badge monitoring for customer-managed sites.
+    check_type: manual
+    evidence_query: inherited.physical_monitoring
+    boto3_services: []
+    boto3_check: No direct boto3 evidence; use inherited AWS assurance and local monitoring records.
+    severity: low
+  - control_id: A.7.5
+    title: Protecting against physical and environmental threats
+    summary: Protect facilities against fire, flood, power loss, and similar threats.
+    aws_guidance: Inherit AWS regional facility resilience and address office, edge, or hybrid infrastructure threats under customer control.
+    check_type: manual
+    evidence_query: inherited.environmental_protection
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for physical threats; retain AWS shared-responsibility evidence and local facility controls.
+    severity: low
+  - control_id: A.7.6
+    title: Working in secure areas
+    summary: Apply procedures for working in secure areas.
+    aws_guidance: Define how administrators work in controlled locations or approved remote setups when performing sensitive AWS actions.
+    check_type: manual
+    evidence_query: manual.secure_area_working
+    boto3_services: [cloudtrail]
+    boto3_check: Use CloudTrail to identify sensitive administrative actions that should only be performed from approved environments.
+    severity: low
+  - control_id: A.7.7
+    title: Clear desk and clear screen
+    summary: Reduce exposure of information through unattended materials and screens.
+    aws_guidance: Apply workstation and administrator behavior requirements for devices used to access AWS consoles and operational data.
+    check_type: manual
+    evidence_query: manual.clear_desk_screen
+    boto3_services: []
+    boto3_check: No direct boto3 evidence; enforce through endpoint controls and awareness measures.
+    severity: low
+  - control_id: A.7.8
+    title: Equipment siting and protection
+    summary: Site and protect equipment to reduce threats and hazards.
+    aws_guidance: Inherit AWS protections for cloud equipment and secure any customer-managed network or endpoint equipment used with AWS.
+    check_type: manual
+    evidence_query: inherited.equipment_protection
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for cloud hardware protection.
+    severity: low
+  - control_id: A.7.9
+    title: Security of assets off-premises
+    summary: Protect assets taken off-premises.
+    aws_guidance: Protect laptops, tokens, and mobile devices used for AWS access with encryption and device-management controls.
+    check_type: manual
+    evidence_query: manual.off_prem_assets
+    boto3_services: []
+    boto3_check: No direct boto3 evidence; review endpoint management and access restrictions outside AWS.
+    severity: medium
+  - control_id: A.7.10
+    title: Storage media
+    summary: Manage storage media securely through its lifecycle.
+    aws_guidance: For AWS, focus on secure handling of exported backups, snapshots, logs, and any removable media used outside the cloud.
+    check_type: hybrid
+    evidence_query: media.secure_handling
+    boto3_services: [s3, backup, kms]
+    boto3_check: Verify exported backups and evidence stores are encrypted and access-restricted; physical media handling remains manual.
+    severity: medium
+  - control_id: A.7.11
+    title: Supporting utilities
+    summary: Protect supporting utilities such as power, telecommunications, and cooling.
+    aws_guidance: Inherit AWS utility resilience and address customer-managed office or edge dependencies that affect AWS administration.
+    check_type: manual
+    evidence_query: inherited.supporting_utilities
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for utility protections.
+    severity: low
+  - control_id: A.7.12
+    title: Cabling security
+    summary: Protect power and communications cabling from interception or damage.
+    aws_guidance: Inherit AWS cabling controls and secure enterprise networks, offices, and hybrid connectivity under customer control.
+    check_type: manual
+    evidence_query: inherited.cabling_security
+    boto3_services: [directconnect]
+    boto3_check: For hybrid links, inventory Direct Connect resources as supporting context; cabling review remains manual.
+    severity: low
+  - control_id: A.7.13
+    title: Equipment maintenance
+    summary: Maintain equipment correctly to ensure continued security.
+    aws_guidance: Inherit AWS maintenance for cloud infrastructure and manage maintenance for customer endpoints, appliances, and hybrid components.
+    check_type: manual
+    evidence_query: inherited.equipment_maintenance
+    boto3_services: []
+    boto3_check: No direct boto3 evidence for physical equipment maintenance.
+    severity: low
+  - control_id: A.7.14
+    title: Secure disposal or re-use of equipment
+    summary: Dispose of or reuse equipment securely.
+    aws_guidance: Inherit AWS media sanitization and manage endpoint or on-premises equipment disposal under local processes.
+    check_type: manual
+    evidence_query: inherited.secure_disposal
+    boto3_services: []
+    boto3_check: No direct boto3 evidence; document inheritance and local disposal records.
+    severity: low
+  - control_id: A.8.1
+    title: User endpoint devices
+    summary: Protect endpoint devices used to process information.
+    aws_guidance: Restrict AWS administration to managed devices with encryption, EDR, patching, and strong identity controls.
+    check_type: hybrid
+    evidence_query: endpoint.admin_device_controls
+    boto3_services: [iam, cloudtrail]
+    boto3_check: Correlate privileged AWS activity and sign-ins with approved device or source network patterns; endpoint state is mainly external.
+    severity: high
+  - control_id: A.8.2
+    title: Privileged access rights
+    summary: Restrict and manage privileged access carefully.
+    aws_guidance: Use role-based admin access, break-glass controls, MFA, session logging, and just-in-time or approval-based elevation where possible.
+    check_type: automated
+    evidence_query: privileged_access.review
+    boto3_services: [iam, sso-admin, cloudtrail]
+    boto3_check: Enumerate admin-equivalent roles, root usage, access key usage, MFA enforcement, and privileged session activity.
+    severity: high
+  - control_id: A.8.3
+    title: Information access restriction
+    summary: Restrict information access according to policy and business requirements.
+    aws_guidance: Align IAM, KMS, Lake Formation, S3 policies, and database permissions with approved access boundaries.
+    check_type: automated
+    evidence_query: information_access.restriction
+    boto3_services: [iam, s3, kms, rds]
+    boto3_check: Identify broad resource policies, public exposure, cross-account grants, and unscoped decrypt or read permissions.
+    severity: high
+  - control_id: A.8.4
+    title: Access to source code
+    summary: Restrict access to source code and related assets.
+    aws_guidance: Limit repository and CI/CD access, protect secrets, and log all changes to build and deployment definitions.
+    check_type: hybrid
+    evidence_query: source_code.access
+    boto3_services: [codecommit, codebuild, codepipeline, secretsmanager]
+    boto3_check: Review repository permissions, pipeline role scopes, and secret references used by build systems.
+    severity: high
+  - control_id: A.8.5
+    title: Secure authentication
+    summary: Implement secure authentication mechanisms and practices.
+    aws_guidance: Prefer federation, enforce MFA, avoid long-lived keys, and harden console and API authentication paths.
+    check_type: automated
+    evidence_query: authentication.secure_baseline
+    boto3_services: [iam, sso-admin]
+    boto3_check: Check password policy, MFA, IAM user presence, access key age, and central identity configuration.
+    severity: high
+  - control_id: A.8.6
+    title: Capacity management
+    summary: Manage capacity to ensure continued operation and security.
+    aws_guidance: Monitor scaling limits, service quotas, storage, logging, and backup growth for in-scope AWS services.
+    check_type: automated
+    evidence_query: capacity.management
+    boto3_services: [cloudwatch, service-quotas, autoscaling]
+    boto3_check: Compare current utilization and quotas, alarm coverage, and autoscaling policies for critical workloads.
+    severity: medium
+  - control_id: A.8.7
+    title: Protection against malware
+    summary: Protect systems against malware.
+    aws_guidance: Use Inspector, EDR on compute, image scanning, runtime detection, and controlled software execution in AWS.
+    check_type: automated
+    evidence_query: malware.protection
+    boto3_services: [inspector2, ecr, guardduty, ssm]
+    boto3_check: Verify vulnerability scanning, ECR image scan settings, GuardDuty malware protection where used, and SSM coverage.
+    severity: high
+  - control_id: A.8.8
+    title: Management of technical vulnerabilities
+    summary: Identify, assess, and remediate technical vulnerabilities in time.
+    aws_guidance: Run continuous scanning, patching, AMI refresh, dependency review, and exception tracking for AWS workloads.
+    check_type: automated
+    evidence_query: vulnerabilities.management
+    boto3_services: [inspector2, securityhub, ssm]
+    boto3_check: Enumerate outstanding findings, patch compliance states, and remediation aging for instances and container images.
+    severity: high
+  - control_id: A.8.9
+    title: Configuration management
+    summary: Establish and maintain secure configurations.
+    aws_guidance: Use hardened baselines, IaC, AWS Config, SCPs, and conformance packs to enforce approved configurations.
+    check_type: automated
+    evidence_query: config.recorder
+    boto3_services: [config, organizations, cloudformation]
+    boto3_check: Verify Config recorders are running, key rules are enabled, and stack-managed baselines are in use.
+    severity: high
+  - control_id: A.8.10
+    title: Information deletion
+    summary: Delete information securely when no longer required.
+    aws_guidance: Apply lifecycle policies, retention schedules, cryptographic erasure where suitable, and secure deletion processes for AWS data stores.
+    check_type: hybrid
+    evidence_query: data.deletion
+    boto3_services: [s3, kms, rds, dynamodb]
+    boto3_check: Review lifecycle policies, backup retention, snapshot handling, and KMS key states related to deletion workflows.
+    severity: medium
+  - control_id: A.8.11
+    title: Data masking
+    summary: Mask data where needed to reduce exposure.
+    aws_guidance: Use masked datasets in non-production, application-layer masking, and restricted analytics views for sensitive data in AWS.
+    check_type: hybrid
+    evidence_query: data.masking
+    boto3_services: [rds, glue, athena, lakeformation]
+    boto3_check: Verify non-production data pipelines and analytics permissions support masked or restricted access; masking logic is partly manual.
+    severity: medium
+  - control_id: A.8.12
+    title: Data leakage prevention
+    summary: Detect and prevent unauthorized disclosure of information.
+    aws_guidance: Use S3 public access blocks, Macie, egress controls, endpoint policies, and monitoring for anomalous exfiltration.
+    check_type: automated
+    evidence_query: dlp.aws_controls
+    boto3_services: [s3control, s3, macie2, ec2]
+    boto3_check: Verify account-level and bucket-level public access blocks, Macie enablement where applicable, and constrained egress paths.
+    severity: high
+  - control_id: A.8.13
+    title: Information backup
+    summary: Back up information and test restoration according to requirements.
+    aws_guidance: Use AWS Backup, service-native snapshots, cross-account or cross-region copies, and periodic restore testing.
+    check_type: automated
+    evidence_query: backups.coverage
+    boto3_services: [backup, rds, ec2, efs, dynamodb]
+    boto3_check: Verify backup plans, protected resources, retention periods, copy actions, and recent backup job success.
+    severity: high
+  - control_id: A.8.14
+    title: Redundancy of information processing facilities
+    summary: Provide redundancy for processing facilities where needed.
+    aws_guidance: Use multi-AZ, load balancing, autoscaling, regional DR, and resilient dependencies for critical services.
+    check_type: automated
+    evidence_query: resilience.redundancy
+    boto3_services: [ec2, elbv2, rds, autoscaling, route53]
+    boto3_check: Identify single-instance, single-AZ, or single-endpoint designs in critical workloads.
+    severity: high
+  - control_id: A.8.15
+    title: Logging
+    summary: Produce, protect, and review logs.
+    aws_guidance: Centralize CloudTrail, Config, VPC Flow Logs, application logs, and retention controls in secure logging accounts or buckets.
+    check_type: automated
+    evidence_query: cloudtrail.multi_region_trail
+    boto3_services: [cloudtrail, logs, s3, kms]
+    boto3_check: Verify multi-region CloudTrail, protected log destinations, encryption, and retention configuration.
+    severity: high
+  - control_id: A.8.16
+    title: Monitoring activities
+    summary: Monitor systems and security events to identify anomalies.
+    aws_guidance: Use Security Hub, GuardDuty, CloudWatch, Config, and SIEM integrations for continuous monitoring.
+    check_type: automated
+    evidence_query: monitoring.security_operations
+    boto3_services: [securityhub, guardduty, cloudwatch, config]
+    boto3_check: Verify Security Hub, GuardDuty, alarms, and key monitoring integrations are enabled for in-scope accounts.
+    severity: high
+  - control_id: A.8.17
+    title: Clock synchronization
+    summary: Synchronize clocks to support reliable operations and evidence.
+    aws_guidance: Rely on AWS-managed time sync for compute services and ensure workloads use synchronized time sources.
+    check_type: hybrid
+    evidence_query: time.synchronization
+    boto3_services: [ssm, ec2]
+    boto3_check: Use SSM or instance configuration evidence to confirm compute uses approved time synchronization settings.
+    severity: low
+  - control_id: A.8.18
+    title: Use of privileged utility programs
+    summary: Restrict and control utility programs that can override system controls.
+    aws_guidance: Limit break-glass shells, SSM session access, automation roles, and administrator tooling in AWS.
+    check_type: hybrid
+    evidence_query: privileged_utilities.control
+    boto3_services: [ssm, iam, cloudtrail]
+    boto3_check: Review Session Manager access, privileged automation roles, and direct shell-related permissions.
+    severity: high
+  - control_id: A.8.19
+    title: Installation of software on operational systems
+    summary: Control software installation on operational systems.
+    aws_guidance: Use immutable images, approved package repositories, deployment pipelines, and restricted SSM or SSH access.
+    check_type: hybrid
+    evidence_query: software.installation_control
+    boto3_services: [ssm, ec2, ecr, codepipeline]
+    boto3_check: Check whether production instances are managed, patched, and deployed via approved images or pipelines rather than ad hoc installation.
+    severity: high
+  - control_id: A.8.20
+    title: Networks security
+    summary: Secure networks and network services.
+    aws_guidance: Apply segmented VPC design, restricted security groups, controlled ingress and egress, private endpoints, and inspection where needed.
+    check_type: automated
+    evidence_query: network.security_baseline
+    boto3_services: [ec2, elbv2, wafv2, network-firewall]
+    boto3_check: Detect permissive security groups, unrestricted ingress, missing WAF on internet-facing applications, and unused inspection controls.
+    severity: high
+  - control_id: A.8.21
+    title: Security of network services
+    summary: Secure network services according to requirements.
+    aws_guidance: Define security expectations for load balancers, VPNs, Direct Connect, DNS, API endpoints, and managed service networking.
+    check_type: hybrid
+    evidence_query: network_services.security
+    boto3_services: [ec2, route53, apigateway, elbv2]
+    boto3_check: Review endpoint exposure, TLS coverage, routing controls, and approved service configurations for network-facing services.
+    severity: high
+  - control_id: A.8.22
+    title: Segregation of networks
+    summary: Segregate networks based on trust and risk.
+    aws_guidance: Separate production, development, shared services, and administrative networks using accounts, VPCs, subnets, and transit controls.
+    check_type: automated
+    evidence_query: network.segmentation
+    boto3_services: [ec2, ram, transitgateway]
+    boto3_check: Inspect route tables, peering, transit attachments, and security group references for unintended trust between environments.
+    severity: high
+  - control_id: A.8.23
+    title: Web filtering
+    summary: Control access to external web resources that may introduce risk.
+    aws_guidance: Apply egress filtering and secure web access for administrators and workloads where relevant.
+    check_type: hybrid
+    evidence_query: web_filtering.controls
+    boto3_services: [network-firewall, route53resolver]
+    boto3_check: Verify network firewall or DNS filtering components exist for controlled outbound access where designed.
+    severity: medium
+  - control_id: A.8.24
+    title: Use of cryptography
+    summary: Use cryptography appropriately to protect information.
+    aws_guidance: Enforce KMS-backed encryption at rest and TLS in transit, manage key lifecycles, and define approved cryptographic usage.
+    check_type: automated
+    evidence_query: ec2.ebs_default_encryption
+    boto3_services: [kms, ec2, s3, rds]
+    boto3_check: Verify default encryption settings, KMS key management, encrypted storage, and TLS-oriented service configurations.
+    severity: high
+  - control_id: A.8.25
+    title: Secure development life cycle
+    summary: Define and apply secure development and maintenance practices.
+    aws_guidance: Embed security requirements, reviews, testing, secrets handling, and approvals into AWS-hosted SDLC processes.
+    check_type: hybrid
+    evidence_query: sdlc.secure_process
+    boto3_services: [codepipeline, codebuild, codecommit, secretsmanager]
+    boto3_check: Inspect pipelines for security stages, artifact controls, and managed secrets usage; process completeness is partly manual.
+    severity: high
+  - control_id: A.8.26
+    title: Application security requirements
+    summary: Identify and specify application security requirements.
+    aws_guidance: Capture security requirements for applications using AWS services, APIs, storage, and identity.
+    check_type: manual
+    evidence_query: manual.app_security_requirements
+    boto3_services: [cloudformation]
+    boto3_check: Use stack or workload inventory as scope evidence; requirement definition is manual.
+    severity: medium
+  - control_id: A.8.27
+    title: Secure system architecture and engineering principles
+    summary: Apply secure architecture and engineering principles.
+    aws_guidance: Use defense in depth, least privilege, segmentation, encryption, resilience, and service-specific secure design patterns in AWS.
+    check_type: hybrid
+    evidence_query: architecture.secure_principles
+    boto3_services: [ec2, iam, kms]
+    boto3_check: Review workload architecture attributes and supporting controls; principle application needs expert assessment.
+    severity: high
+  - control_id: A.8.28
+    title: Secure coding
+    summary: Apply secure coding principles and practices.
+    aws_guidance: Require secure coding standards, code scanning, secret detection, and peer review for software deployed on AWS.
+    check_type: hybrid
+    evidence_query: code.secure_practices
+    boto3_services: [codecommit, codebuild]
+    boto3_check: Verify code scanning or review integrations are enabled where supported; secure coding quality also needs manual review.
+    severity: high
+  - control_id: A.8.29
+    title: Security testing in development and acceptance
+    summary: Perform security testing during development and before release.
+    aws_guidance: Integrate SAST, dependency checks, IaC checks, container scans, and pre-production testing into release pipelines.
+    check_type: automated
+    evidence_query: testing.security_pipeline
+    boto3_services: [codebuild, codepipeline, ecr, inspector2]
+    boto3_check: Detect whether release pipelines include security scans and whether scanned artifacts proceed to deployment.
+    severity: high
+  - control_id: A.8.30
+    title: Outsourced development
+    summary: Control security risks from outsourced development.
+    aws_guidance: Isolate vendor build access, review contracts, and enforce secure delivery requirements for third-party AWS development.
+    check_type: hybrid
+    evidence_query: outsourced_development.control
+    boto3_services: [iam, codecommit, codebuild]
+    boto3_check: Enumerate vendor or external principals with development access and review restricted scopes and logging.
+    severity: medium
+  - control_id: A.8.31
+    title: Separation of development, test and production environments
+    summary: Separate development, test, and production environments appropriately.
+    aws_guidance: Use separate AWS accounts, VPCs, pipelines, secrets, and data sets across environments.
+    check_type: automated
+    evidence_query: environments.separation
+    boto3_services: [organizations, iam, ec2, secretsmanager]
+    boto3_check: Verify separate accounts or resource boundaries, distinct roles, and non-shared production secrets or networks.
+    severity: high
+  - control_id: A.8.32
+    title: Change management
+    summary: Control changes to information processing facilities and systems.
+    aws_guidance: Require approved IaC or pipeline-driven changes, track emergency changes, and log administrative modifications in AWS.
+    check_type: hybrid
+    evidence_query: change.management
+    boto3_services: [cloudtrail, codepipeline, cloudformation]
+    boto3_check: Review whether changes flow through approved pipelines and whether out-of-band console changes are detectable via CloudTrail.
+    severity: high
+  - control_id: A.8.33
+    title: Test information
+    summary: Protect and control information used for testing.
+    aws_guidance: Avoid production data in lower environments or mask it before use; restrict access to test datasets in AWS.
+    check_type: hybrid
+    evidence_query: test_data.protection
+    boto3_services: [s3, rds, dynamodb]
+    boto3_check: Identify lower-environment data stores and whether tagging, encryption, and restricted access indicate controlled test data use.
+    severity: medium
+  - control_id: A.8.34
+    title: Protection of information systems during audit testing
+    summary: Safeguard operational systems and data during audit activities.
+    aws_guidance: Use read-only access, isolated tooling, and approved windows when auditors test AWS environments.
+    check_type: hybrid
+    evidence_query: audit_testing.protection
+    boto3_services: [iam, cloudtrail]
+    boto3_check: Verify auditor roles are read-only or limited and monitor audit-period activity for unsafe actions.
+    severity: medium

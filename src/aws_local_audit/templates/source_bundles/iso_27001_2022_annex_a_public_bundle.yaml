@@ -1,0 +1,117 @@
+bundle_code: ISO27001_2022_ANNEX_A_PUBLIC
+framework_code: ISO27001_2022
+name: ISO/IEC 27001:2022 Annex A public source bundle
+version: "1"
+purpose: >
+  Curated public-source bundle for Annex A control coverage, transition context,
+  and implementation guidance. Intended for paraphrased use with provenance.
+copyright_mode: paraphrase_only_without_licensed_iso_text
+authority_document_key: ISO27001_2022
+framework_projection:
+  framework:
+    code: ISO27001_2022
+    name: ISO/IEC 27001:2022
+    version: "2022"
+    category: framework
+    issuing_body: International Organization for Standardization
+    jurisdiction: global
+  control_field_mapping:
+    control_id: control_id
+    title: title
+    summary: summary
+    source_reference: control_id
+  metadata_field_mapping:
+    aws_guidance: aws_guidance
+    check_type: check_type
+    boto3_services: boto3_services
+    boto3_check: boto3_check
+normalized_fields:
+  - control_id
+  - title
+  - summary
+  - control_theme
+  - transition_notes
+  - legacy_mapping_2013
+  - iso27002_attributes.control_type
+  - iso27002_attributes.security_properties
+  - iso27002_attributes.cybersecurity_concepts
+  - iso27002_attributes.operational_capabilities
+  - implementation_guidance
+  - provenance
+sources:
+  - source_code: WENTZWU_ISO27002_2022_ATTRIBUTES
+    source_name: The 93 Attributes of ISO 27002:2022 Security Controls
+    source_type: pdf
+    acquisition_mode: direct_download
+    source_url: https://wentzwu.com/wp-content/uploads/2022/02/ISO-27002-Controls.pdf
+    parser_strategy: pdf_row_extract
+    parser_notes:
+      - Read control rows in numeric order.
+      - Normalize numeric ids like 5.1 to A.5.1.
+      - Split hashtag tokens into attribute arrays.
+    contributes:
+      - control_id
+      - title
+      - iso27002_attributes.control_type
+      - iso27002_attributes.security_properties
+      - iso27002_attributes.cybersecurity_concepts
+      - iso27002_attributes.operational_capabilities
+    confidence: high
+  - source_code: ISMS_ONLINE_ANNEX_A_2022
+    source_name: ISO 27001:2022 Annex A Explained & Simplified
+    source_type: html
+    acquisition_mode: crawl
+    source_url: https://www.isms.online/iso-27001/annex-a-2022/
+    parser_strategy: html_sections_and_tables
+    parser_notes:
+      - Extract the 4-theme grouping.
+      - Extract transition commentary and 2013 crosswalk data where available.
+      - Use paraphrased editorial summaries only.
+    contributes:
+      - control_theme
+      - transition_notes
+      - legacy_mapping_2013
+      - summary
+    confidence: medium
+  - source_code: AVISO_ANNEX_A_GUIDES
+    source_name: Aviso Consultancy ISO 27001:2022 Annex A guides
+    source_type: html
+    acquisition_mode: crawl
+    source_url: https://www.avisoconsultancy.co.uk/iso-27001-2022-annex-a/
+    discovery_mode: search_per_control
+    search_template: 'site:avisoconsultancy.co.uk/iso-27001-2022-annex-a "{control_numeric_id} {title}"'
+    parser_strategy: html_section_extract
+    parser_notes:
+      - Extract Purpose and Implementation Guidance sections.
+      - Store as paraphrased implementation guidance.
+      - Link each extracted note to a reference document entry.
+    contributes:
+      - implementation_guidance
+      - manual_evidence_examples
+    confidence: medium
+  - source_code: PECB_ISO27001_2022_TRANSITION
+    source_name: ISO/IEC 27001:2022 Transition
+    source_type: html
+    acquisition_mode: crawl
+    source_url: https://pecb.com/whitepaper/isoiec-270012022-transition
+    parser_strategy: narrative_extract
+    parser_notes:
+      - Use for transition metadata only.
+      - Do not use as the primary control catalog.
+    contributes:
+      - transition_notes
+      - new_control_flags
+      - merge_context
+    confidence: medium
+fallback_sources:
+  - source_code: ISO27001_COM_ANNEX_A_GUIDES
+    source_url: https://iso27001.com/annex-a/
+    purpose: per-control implementation reference fallback
+  - source_code: CONTROLSTACK_ISO27001_CONTROLS
+    source_url: https://controlstack.au/controls/
+    purpose: plain-language explanation fallback
+integration_notes:
+  - Preserve provenance for every imported field.
+  - Do not overwrite existing ISO YAML with verbatim licensed text unless supplied by the user.
+  - Register every source as a reference document in the my_grc reference library.
+  - Project parsed implementation notes into unified controls as guidance, not as normative requirements.
